@@ -1,0 +1,39 @@
+import maya.cmds as MC
+
+def build_volume_axis_fields(field_settings):
+    """
+    Builds volume axis fields with custom settings using a dictionary.
+    """
+    for i, field in enumerate(field_settings):
+        # Create a new volume axis field with the specified name
+        field_name = field.get("name", "Field{}".format(i+1))
+        MC.volumeAxis(name=field_name)
+        MC.select( field_name, cl=True )
+
+        # Set the field settings
+        for attr, value in field.items():
+            if attr != "name":
+                MC.setAttr(field_name + "." + attr, value)
+
+
+# Define the settings for each field
+field_settings = [
+    {
+        "name": "test",
+        "attenuation": 0.5,
+        "turbulenceOffsetY": 0.2
+    },
+    {
+        "name": "dasdasda",
+        "attenuation": 0.4,
+        "turbulenceOffsetY": 0.1
+    },
+    {
+        "name": "Field3",
+        "attenuation": 0.3,
+        "turbulenceOffsetY": 0.3
+    }
+]
+
+# Build the volume axis fields using the specified settings
+build_volume_axis_fields(field_settings)
