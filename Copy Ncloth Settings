@@ -1,0 +1,61 @@
+import maya.cmds as mc
+
+# Get a list of selected 'nCloth' object
+selected_objects = mc.ls(type="nCloth")
+
+def find_mainCloth_values(obj):
+    """
+    Finds the values of nCloth attributes for a given object.
+
+    Args:
+        obj (str): The name of the nCloth object to find attribute values for.
+
+    Returns:
+        dict: A dictionary containing the names and values of the nCloth attributes.
+    """
+    main_cloth_obj = obj
+    # Define an empty dictionary to store nCloth attributes and their values
+    ncloth_attrs = {}
+    attrs_to_take = ['collide', 'selfCollide', 'friction', 'stretchResistance', 'bendResistance', 'bendAngleDropoff',
+                     'pointMass', 'lift', 'drag', 'tangentialDrag', 'damp', 'stretchDamp', 'scalingRelation',
+                     'ignoreSolverGravity', 'ignoreSolverWind', 'selfTrappedCheck', 'pushOutRadius',
+                     'maxSelfCollisionIterations']
+    
+    # Check if obj is an nCloth object
+    if mc.nodeType(main_cloth_obj) == 'nCloth':
+        # List all attributes of the nCloth object
+        obj_attrs = mc.listAttr(main_cloth_obj)
+        # Check that the attributes are in the approved list
+        for attr in obj_attrs:
+            if attr in attrs_to_take:
+                key = "{}".format(attr)
+                # Get the value of the attribute for the nCloth object
+                new_value = mc.getAttr(main_cloth_obj + ".{}".format(attr))
+                # Add the attribute and value to the dictionary
+                ncloth_attrs.update({key: new_value})
+            
+    return ncloth_attrs        
+
+# Apply nCloth attribute settings to other cloth objects
+def apply_settings_to_cloth(settings):
+    """
+    Applies the nCloth attribute settings to a list of cloth objects.
+
+    Args:
+        settings (dict): A dictionary containing the names and values of the nCloth attributes.
+
+    Returns:
+        None
+    """
+    main_settings = settings
+    # Select all other nCloth objects except for the first one
+    cloth_to_apply_settings = selected_objects[1:]
+    
+    # Iterate over each cloth object and apply the settings to its attributes
+    for each in cloth_to_apply_settings:
+        for attr, value in main_settings.items():
+            mc.setAttr(each + "." + attr, value)
+            
+    
+main_settings_dictionary = find_mainCloth_values(selected_objects[0])
+apply_settings_to_cloth(main_settings_dictionary)
