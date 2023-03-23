@@ -1,0 +1,26 @@
+import maya.cmds as mc
+
+def turn_off_deformers(obj, approved_deformers):
+    """
+    Turns off the envelope attribute of deformers in the given object.
+    Only deformers in the list of approved deformers will be turned off.
+
+    Args:
+        obj (list of str): List of object names to turn off deformers on.
+        approved_deformers (list of str): List of deformer node types that are approved to be turned off.
+
+    Returns:
+        None
+    """
+    for each in obj:
+        # Get all descendants of the current object.
+        relatives = mc.listRelatives(each, ad=True, path=True)
+        # Get the history of all descendants, up to 2 levels deep.
+        history = mc.listHistory(relatives, pruneDagObjects=True, il=2)
+        if history:
+            for relative in relatives:
+                # Find all deformers in the approved deformer list in the history of the current descendant.
+                deformers = [x for x in history for y in range(len(approved_deformers)) if mc.nodeType(x) == approved_deformers[y]]
+            for deform in deformers:
+                # Set the envelope attribute of each deformer to 0 to turn it off.
+                mc.setAttr("%s.envelope" % deform, 0)
