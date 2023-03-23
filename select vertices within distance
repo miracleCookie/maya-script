@@ -1,0 +1,27 @@
+import maya.cmds as mc
+
+def select_vertices_within_distance(source_mesh, target_mesh, distance_threshold):
+    """
+    Selects the vertices of the target mesh that are within the given distance threshold of the source mesh.
+   
+    Args:
+        source_mesh (str): The name of the source mesh.
+        target_mesh (str): The name of the target mesh.
+        distance_threshold (float): The distance threshold for vertex proximity.
+    """
+   
+    # Get the vertex positions of the source and target meshes
+    source_vertices = mc.ls(source_mesh + '.vtx[*]', fl=True)
+    target_vertices = mc.ls(target_mesh + '.vtx[*]', fl=True)
+
+    # Select the vertices of the target mesh within the distance threshold of the source mesh
+    mc.select(clear=True)
+    for i in range(len(target_vertices)):
+        target_pos = cmds.pointPosition(target_vertices[i], world=True)
+        for j in range(len(source_vertices)):
+            source_pos = cmds.pointPosition(source_vertices[j], world=True)
+            distance = ((target_pos[0]-source_pos[0])**2 + (target_pos[1]-source_pos[1])**2 + (target_pos[2]-source_pos[2])**2)**0.5
+            if distance < distance_threshold:
+                cmds.select(target_vertices[i], add=True)
+                break
+               
