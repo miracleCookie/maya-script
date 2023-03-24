@@ -1,0 +1,76 @@
+import maya.cmds as mc
+import json
+import os
+
+
+def export_json(data):
+    """
+    Exports a dictionary as a JSON file.
+
+    Args:
+        data : The data to export as a JSON file.
+
+    """
+
+    # Prompt user for file location
+    file_path = mc.fileDialog2(
+        fileMode=0,
+        caption="Save JSON file",
+        fileFilter='*.json'
+    )
+
+    if not file_path:
+        mc.warning("No file path selected.")
+        return
+
+    # Export data to JSON file
+    with open(file_path[0], 'w') as f:
+        json.dump(data, f)
+
+    # Confirm export success to user
+    if os.path.exists(file_path[0]):
+        mc.confirmDialog(
+            title='Export Success',
+            message='JSON file exported to ' + file_path[0],
+            button=['OK']
+        )
+    else:
+        mc.warning("JSON export failed.")
+
+
+
+
+def import_json():
+    """
+    Imports a JSON file.
+
+    Returns:
+        dict: imported JSON file.
+    """
+
+    # Prompt user for file location
+    file_path = mc.fileDialog2(
+        fileMode=1,
+        caption="Import JSON file",
+        fileFilter='*.json'
+    )
+
+    if not file_path:
+        mc.warning("No file path selected.")
+        return
+
+    if not os.path.exists(file_path[0]):
+        mc.warning("File not found: " + file_path[0])
+        return
+
+    try:
+        # Import data from JSON file
+        with open(file_path[0], 'r') as f:
+            data = json.load(f)
+
+        # Return imported data
+        return data
+    except Exception as e:
+        mc.warning("Failed to import JSON file: " + str(e))
+
+
