@@ -1,0 +1,24 @@
+import maya.cmds as mc
+
+
+def toggle_xray():
+    """Toggle X-Ray visibility for selected surfaces in Maya.
+
+    Toggles the X-Ray visibility of selected objects. If X-Ray visibility
+    is currently off, it is turned on, and if it is currently on, it is turned off.
+
+    """
+
+    # Get the currently selected surfaces
+    selected_surfaces = mc.ls(orderedSelection=True)
+
+    for each in selected_surfaces:
+        # Check if X-Ray visibility is currently on or off
+        xray_visibility = mc.displaySurface(each, xRay=True, q=True)
+
+        # If X-Ray visibility is off, turn it on
+        if not xray_visibility[0]:
+            mc.displaySurface(each, xRay=True)
+        # If X-Ray visibility is on, turn it off
+        else:
+            mc.displaySurface(each, xRay=False)
